@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Govee H6008 Public Controller</title>
+  <style>
+    body { background:#111; color:white; font-family:Arial; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; gap:20px; }
+    button { background:#4caf50; border:none; padding:15px 35px; font-size:22px; border-radius:10px; cursor:pointer; color:white; transition:0.2s; }
+    button.off { background:red; }
+    #colorPicker { width:140px; height:70px; border:none; cursor:pointer; border-radius:10px; }
+  </style>
+</head>
+<body>
 
+<h2>Govee H6008 Controller</h2>
+
+<button id="toggleBtn">Turn ON</button>
+<input type="color" id="colorPicker">
+<button id="applyColorBtn">Apply Color</button>
+
+<script>
+let isOn = false;
+const toggleBtn = document.getElementById("toggleBtn");
+
+toggleBtn.onclick = async () => {
+  const state = isOn ? "off" : "on";
+  await fetch("/toggle", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({state}) });
+  isOn = !isOn;
+  toggleBtn.textContent = isOn ? "Turn OFF" : "Turn ON";
+  toggleBtn.className = isOn ? "off" : "";
+};
+
+document.getElementById("applyColorBtn").onclick = async () => {
+  const hex = document.getElementById("colorPicker").value;
+  const r = parseInt(hex.substr(1,2),16);
+  const g = parseInt(hex.substr(3,2),16);
+  const b = parseInt(hex.substr(5,2),16);
+  await fetch("/color", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({r,g,b}) });
+  alert(`Color sent: R=${r}, G=${g}, B=${b}`);
+};
+</script>
+
+</body>
+</html>
